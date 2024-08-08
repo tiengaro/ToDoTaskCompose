@@ -1,8 +1,8 @@
 plugins {
     alias(libs.plugins.android.application)
+    alias(libs.plugins.hilt)
     alias(libs.plugins.jetbrains.kotlin.android)
     kotlin("kapt")
-    alias(libs.plugins.ksp)
 }
 
 android {
@@ -32,12 +32,12 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_19
-        targetCompatibility = JavaVersion.VERSION_19
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
      }
 
     kotlinOptions {
-        jvmTarget = "19"
+        jvmTarget = "17"
     }
 
     buildFeatures {
@@ -66,13 +66,14 @@ dependencies {
 
 
     implementation(libs.room.runtime)
-    ksp(libs.room.compiler)
+    kapt(libs.room.compiler)
     implementation(libs.room.ktx)
 
     implementation(libs.datastore.preferences)
 
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
+    kapt(libs.hilt.androidx.compiler)
 
     implementation(libs.navigation.compose)
 
