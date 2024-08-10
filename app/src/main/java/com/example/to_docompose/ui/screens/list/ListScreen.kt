@@ -1,6 +1,5 @@
 package com.example.to_docompose.ui.screens.list
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
