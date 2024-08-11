@@ -32,11 +32,14 @@ import com.example.to_docompose.ui.theme.TOP_APP_BAR_HEIGHT
 import com.example.to_docompose.ui.theme.Typography
 import com.example.to_docompose.ui.theme.topAppBarBackgroundColor
 import com.example.to_docompose.ui.theme.topAppBarContentColor
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.buffer
+import kotlinx.coroutines.flow.replay
 
 @Composable
-fun ListAppBar() {
+fun ListAppBar(onSearchClicked: () -> Unit) {
     DefaultListAppBar(
-        onSearchClicked = {},
+        onSearchClicked = onSearchClicked,
         onSortClicked = {},
         onDeleteClicked = {},
     )
@@ -183,7 +186,6 @@ fun SearchBar(
         modifier = Modifier
             .fillMaxWidth()
             .height(TOP_APP_BAR_HEIGHT),
-        tonalElevation =
     ) {
 
     }
