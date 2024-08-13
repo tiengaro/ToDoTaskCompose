@@ -13,17 +13,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.text.BasicText
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.Button
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshots.SnapshotStateList
@@ -35,11 +32,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.to_docompose.R
 import com.example.to_docompose.ui.theme.fabBackgroundColor
-import kotlinx.collections.immutable.PersistentList
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlin.random.Random
 
-data class Test(
+data class TestData(
     val id: Int,
     val test: String
 )
@@ -53,13 +49,13 @@ fun getRandomColor() = Color(
 
 @SuppressLint("UnrememberedMutableState")
 @Composable
-fun ComplexModelExample(test: SnapshotStateList<Test>, onClick: (item: Test) -> Unit) {
-
-
-
+fun ComplexModelExample(test: SnapshotStateList<TestData>, onClick: (item: TestData) -> Unit) {
+    Log.d("TAG", "ListScreen: update UI 2")
     Column(modifier = Modifier.fillMaxSize()) {
         LazyColumn(modifier = Modifier.fillMaxSize()) {
             items(test, key = { it.hashCode() }) { item ->
+
+                Log.d("TAG", "ListScreen: update UI 3")
                 Text(
                     text = item.test,
                     modifier = Modifier
@@ -86,28 +82,13 @@ fun ComplexModelExample(test: SnapshotStateList<Test>, onClick: (item: Test) -> 
 @OptIn(ExperimentalCoroutinesApi::class)
 @Composable
 fun ListScreen(navigateToTaskScreen: (taskId: Int) -> Unit) {
-
-
     val onSearchClicked = {
 
     }
-    val testArray = arrayListOf<Test>().apply {
+
+    val testArray = arrayListOf<TestData>().apply {
         for (i in 0..15) {
-            this.add(Test(i, "$i"))
-        }
-
-    }
-    val test: SnapshotStateList<Test> = mutableStateListOf<Test>().apply {
-        addAll(testArray)
-    }
-
-    var selected = 0
-    val onClick = remember {
-        {item: Test ->
-            test[selected] = test[selected].copy(test = "${selected}")
-            test[item.id] = test[item.id].copy(test = "${item.id} Selected")
-
-            selected  = item.id
+            this.add(TestData(i, "$i"))
         }
     }
 
@@ -125,7 +106,22 @@ fun ListScreen(navigateToTaskScreen: (taskId: Int) -> Unit) {
                     .background(color = MaterialTheme.colorScheme.background),
                 contentAlignment = Alignment.Center
             ) {
+                Log.d("TAG", "ListScreen: update UI 1")
 
+                val test = mutableStateListOf<TestData>().apply {
+                    addAll(testArray)
+                }
+
+                var selected = 0
+                val onClick = remember {
+                    {item: TestData ->
+//            test[selected] = test[selected].copy(test = "${selected}")
+                        val item = test[item.id].copy(test = "${item.id} selected")
+                        test[item.id] = item
+
+                        selected  = item.id
+                    }
+                }
 
                 ComplexModelExample(test, onClick)
             }
