@@ -6,4 +6,6 @@
     <string name="sort_tasks">Sort Tasks</string>
     <string name="delete_all">Delete All</string>
     <string name="tasks">Tasks</string>
+    <string name="search_icon">Search Icon</string>
+    <string name="icon_close">Icon Close</string>
 </resources>
