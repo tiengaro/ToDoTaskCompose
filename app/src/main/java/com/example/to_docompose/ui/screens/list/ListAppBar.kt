@@ -1,12 +1,13 @@
 package com.example.to_docompose.ui.screens.list
 
-import android.provider.CalendarContract.Colors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -19,11 +20,9 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SmallTopAppBar
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -32,11 +31,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.SubcomposeLayout
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -51,21 +49,44 @@ import com.example.to_docompose.ui.theme.TOP_APP_BAR_HEIGHT
 import com.example.to_docompose.ui.theme.Typography
 import com.example.to_docompose.ui.theme.topAppBarBackgroundColor
 import com.example.to_docompose.ui.theme.topAppBarContentColor
+import com.example.to_docompose.ui.viewmodels.SharedViewModel
+import com.example.to_docompose.util.SearchAppBarState
+import com.example.to_docompose.util.TrailingIconState
 
 @Composable
-fun ListAppBar() {
-//    DefaultListAppBar(
-//        onSearchClicked = {},
-//        onSortClicked = {},
-//        onDeleteClicked = {},
-//    )
+fun ListAppBar(
+    sharedViewModel: SharedViewModel,
+    searchAppBarState: SearchAppBarState,
+    searchTextState: String
+) {
+    when (searchAppBarState) {
+        SearchAppBarState.OPENED -> {
+            SearchBar(
+                text = searchTextState,
+                onTextChange = {
+                    sharedViewModel.searchTextState.value = it
+                },
+                onCloseClicked = {
+                    sharedViewModel.searchAppBarState.value = SearchAppBarState.CLOSED
+                    sharedViewModel.searchTextState.value = ""
+                },
+                onSearchClicked = {}
+            )
+        }
 
-    SearchBar(
-        text = "",
-        onTextChange = {},
-        onCloseClicked = {},
-        onSearchClicked = {}
-    )
+
+        SearchAppBarState.CLOSED -> {
+            DefaultListAppBar(
+                onSearchClicked = {
+                    sharedViewModel.searchAppBarState.value = SearchAppBarState.OPENED
+                },
+                onSortClicked = {},
+                onDeleteClicked = {},
+            )
+        }
+
+        else -> {}
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -208,73 +229,103 @@ fun SearchBar(
     onCloseClicked: () -> Unit,
     onSearchClicked: (String) -> Unit,
 ) {
-    Surface(
-        modifier = Modifier
-            .fillMaxWidth()
-            .statusBarsPadding()
-            .height(TOP_APP_BAR_HEIGHT)
-            .padding(0.dp),
-        color = MaterialTheme.colorScheme.topAppBarBackgroundColor,
-        shadowElevation = 4.dp,
-    ) {
-        TextField(
-            modifier = Modifier.fillMaxWidth(),
-            colors = TextFieldDefaults.colors(
-                unfocusedContainerColor = Color.Transparent,
-                focusedContainerColor = Color.Transparent,
-                cursorColor = MaterialTheme.colorScheme.topAppBarContentColor,
-                focusedIndicatorColor = Color.Transparent,
-                disabledIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent,
-            ),
-            value = text,
-            onValueChange = { value ->
-                onTextChange(value)
-            },
-            placeholder = {
-                Text(
-                    modifier = Modifier.alpha(0.6f),
-                    text = "Search...",
-                    color = Color.White
-                )
+    var trailingIconState by remember { mutableStateOf(TrailingIconState.READY_TO_DELETE) }
 
-            },
-            textStyle = TextStyle(
-                color = MaterialTheme.colorScheme.topAppBarContentColor,
-                fontSize = MaterialTheme.typography.titleSmall.fontSize
-            ),
-            singleLine = true,
-            leadingIcon = {
-                IconButton(
-                    modifier = Modifier.alpha(0.38f),
-                    onClick = {}
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Search,
-                        contentDescription = stringResource(R.string.search_icon),
-                        tint = MaterialTheme.colorScheme.topAppBarContentColor
-                    )
-                }
-            },
-            trailingIcon = {
-                IconButton(onClick = {
-                    onCloseClicked()
-                }) {
-                    Icon(
-                        imageVector = Icons.Filled.Close,
-                        contentDescription = stringResource(R.string.icon_close),
-                        tint = MaterialTheme.colorScheme.topAppBarContentColor
-                    )
-                }
-            },
-            keyboardOptions = KeyboardOptions(
-                imeAction = ImeAction.Search
-            ),
-            keyboardActions = KeyboardActions {
-                onSearchClicked(text)
-            }
+    val insets = WindowInsets.statusBars
+    val statusBarHeight = with(LocalDensity.current) { insets.getTop(this).toDp() }
+
+    Column(
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(statusBarHeight)
+                .background(MaterialTheme.colorScheme.topAppBarBackgroundColor)
         )
+        Surface(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(TOP_APP_BAR_HEIGHT)
+                .padding(0.dp),
+            color = MaterialTheme.colorScheme.topAppBarBackgroundColor,
+        ) {
+            TextField(
+                modifier = Modifier.fillMaxWidth(),
+                colors = TextFieldDefaults.colors(
+                    unfocusedContainerColor = Color.Transparent,
+                    focusedContainerColor = Color.Transparent,
+                    cursorColor = MaterialTheme.colorScheme.topAppBarContentColor,
+                    focusedIndicatorColor = Color.Transparent,
+                    disabledIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                ),
+                value = text,
+                onValueChange = { value ->
+                    onTextChange(value)
+                },
+                placeholder = {
+                    Text(
+                        modifier = Modifier.alpha(0.6f),
+                        text = stringResource(R.string.search),
+                        color = Color.White
+                    )
+
+                },
+                textStyle = TextStyle(
+                    color = MaterialTheme.colorScheme.topAppBarContentColor,
+                    fontSize = MaterialTheme.typography.titleSmall.fontSize
+                ),
+                singleLine = true,
+                leadingIcon = {
+                    IconButton(
+                        modifier = Modifier.alpha(0.38f),
+                        onClick = {}
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Search,
+                            contentDescription = stringResource(R.string.search_icon),
+                            tint = MaterialTheme.colorScheme.topAppBarContentColor
+                        )
+                    }
+                },
+                trailingIcon = {
+                    IconButton(onClick = {
+                        when (trailingIconState) {
+                            TrailingIconState.READY_TO_DELETE -> {
+                                onTextChange("")
+                                trailingIconState = TrailingIconState.READY_TO_CLOSE
+                            }
+
+                            TrailingIconState.READY_TO_CLOSE -> {
+                                if (text.isNotEmpty()) {
+                                    onTextChange("")
+                                } else {
+                                    onCloseClicked()
+                                    trailingIconState = TrailingIconState.READY_TO_DELETE
+                                }
+
+                            }
+                        }
+                        onCloseClicked()
+                    }) {
+                        Icon(
+                            imageVector = Icons.Filled.Close,
+                            contentDescription = stringResource(R.string.icon_close),
+                            tint = MaterialTheme.colorScheme.topAppBarContentColor
+                        )
+                    }
+                },
+                keyboardOptions = KeyboardOptions(
+                    imeAction = ImeAction.Search
+                ),
+                keyboardActions = KeyboardActions {
+                    onSearchClicked(text)
+                }
+            )
+        }
     }
+
 }
 
 @Composable

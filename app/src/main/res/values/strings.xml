@@ -8,4 +8,7 @@
     <string name="tasks">Tasks</string>
     <string name="search_icon">Search Icon</string>
     <string name="icon_close">Icon Close</string>
+    <string name="search">Search</string>
+    <string name="sad_face_icon">Sad Face Icon</string>
+    <string name="no_tasks_found">No Tasks Found</string>
 </resources>
