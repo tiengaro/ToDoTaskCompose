@@ -26,16 +26,19 @@ import com.example.to_docompose.ui.theme.PRIORITY_INDICATOR_SIZE
 import com.example.to_docompose.ui.theme.TASK_ITEM_ELEVATION
 import com.example.to_docompose.ui.theme.taskItemBackgroundColor
 import com.example.to_docompose.ui.theme.taskItemTextColor
+import com.example.to_docompose.util.RequestState
 
 @Composable
 fun ListContent(
-    toDoTasks: List<ToDoTask>,
+    tasks: RequestState<List<ToDoTask>>,
     navigationToTaskScreen: (taskId: Int) -> Unit
 ) {
-    if (toDoTasks.isEmpty()) {
-        EmptyContent()
-    } else {
-        DisplayTasks(toDoTasks, navigationToTaskScreen)
+    if (tasks is RequestState.Success) {
+        if (tasks.data.isEmpty()) {
+            EmptyContent()
+        } else {
+            DisplayTasks(tasks.data, navigationToTaskScreen)
+        }
     }
 }
 

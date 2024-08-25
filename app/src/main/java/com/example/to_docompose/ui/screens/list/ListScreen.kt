@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.FloatingActionButton
@@ -23,16 +24,29 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.to_docompose.R
 import com.example.to_docompose.data.models.Priority
 import com.example.to_docompose.data.models.ToDoTask
+import com.example.to_docompose.ui.theme.ToDoComposeTheme
 import com.example.to_docompose.ui.theme.fabBackgroundColor
 import com.example.to_docompose.ui.viewmodels.SharedViewModel
+import kotlin.random.Random
 
 @Composable
-fun ListScreen(navigateToTaskScreen: (taskId: Int) -> Unit, sharedViewModel: SharedViewModel) {
+fun ListScreen(
+    navigateToTaskScreen: (taskId: Int) -> Unit,
+    sharedViewModel: SharedViewModel
+) {
 
     LaunchedEffect(key1 = true) {
-        for (i in 0..50) {
-            sharedViewModel.addTask(ToDoTask(i, "Title Test $i", "Description Test $i", Priority.HIGH))
-        }
+//        val listPriority = listOf(Priority.LOW, Priority.MEDIUM, Priority.HIGH)
+//        for (i in 0..50) {
+//            sharedViewModel.addTask(
+//                ToDoTask(
+//                    i,
+//                    "Title Test $i",
+//                    "Description Test $i",
+//                    listPriority[Random.nextInt(2)]
+//                )
+//            )
+//        }
         sharedViewModel.getAllTasks()
     }
 
@@ -63,8 +77,7 @@ fun ListScreen(navigateToTaskScreen: (taskId: Int) -> Unit, sharedViewModel: Sha
             }
         },
         floatingActionButton = {
-//            ListFab (navigateToTaskScreen)
-            ListFab { sharedViewModel.deleteAllTasks() }
+            ListFab(navigateToTaskScreen)
         }
     )
 }
@@ -73,6 +86,7 @@ fun ListScreen(navigateToTaskScreen: (taskId: Int) -> Unit, sharedViewModel: Sha
 fun ListFab(onFabClicked: (taskId: Int) -> Unit) {
     FloatingActionButton(
         onClick = { onFabClicked(-1) },
+        shape = CircleShape,
         containerColor = MaterialTheme.colorScheme.fabBackgroundColor
 
     ) {

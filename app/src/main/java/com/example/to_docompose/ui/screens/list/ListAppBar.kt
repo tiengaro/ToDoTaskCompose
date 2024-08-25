@@ -241,7 +241,7 @@ fun SearchBar(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(statusBarHeight)
-                .background(MaterialTheme.colorScheme.topAppBarBackgroundColor)
+//                .background(MaterialTheme.colorScheme.topAppBarBackgroundColor)
         )
         Surface(
             modifier = Modifier
